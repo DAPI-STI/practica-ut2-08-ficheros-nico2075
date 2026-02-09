@@ -31,4 +31,12 @@ def write_final_grade(path: str | Path, name: str, average: float) -> None:
     Nota:
     - No hace falta escribir cabecera para este ejercicio.
     """
-    raise NotImplementedError("Implementa write_final_grade(path, name, average)")
+    path = Path(path)
+    if not name or name.strip() == "":
+        raise ValueError("El nombre no puede estar vacío.")
+    if not (0 <= average <= 10):
+        raise ValueError("La nota debe estar entre 0 y 10.")
+    name = name.strip()
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(f"{name},{average}\n")
+
