@@ -13,7 +13,7 @@ Ejemplo típico:
 from __future__ import annotations
 
 from pathlib import Path
-
+import csv
 
 def csv_average(path: str | Path, column: str) -> float:
     """
@@ -33,4 +33,19 @@ def csv_average(path: str | Path, column: str) -> float:
 
     csv_average(..., "average") -> 8.0
     """
-    raise NotImplementedError("Implementa csv_average(path, column)")
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"El fichero '{path}' no existe.")
+    with open(path, encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        if column not in reader.fieldnames:
+            raise ValueError(f"La columna '{column}' no existe en el CSV.")
+        values = []
+        for row in reader:
+            try:
+                values.append(float(row[column]))
+            except (ValueError, TypeError):
+                raise ValueError(f"Valor no numérico en la columna '{column}'.")
+        if not values:
+            raise ValueError("El CSV no contiene datos tras la cabecera.")
+        return sum(values) / len(values)
